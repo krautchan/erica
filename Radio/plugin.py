@@ -674,6 +674,12 @@ class Radio(callbacks.Plugin):
 		if ('listener' in data):
 			for stream in data['listener']:
 				stream['c'] = int(stream['c'])
+				
+		# get rid of overly long showdescriptions
+		
+		if ('showdescription' in data['shows'][0]):
+			if(len(data['shows'][0]['showdescription']) > 30):
+				data['shows'][0]['showdescription'] = "%s [...] (http://radio.krautchan.net/show.php?show=%s)" % (data['shows'][0]['showdescription'][:30], data['shows'][0]['showid'])
 
 		def convertInteger(d, key):
 			if ((key in d) and (d[key] != None)):
