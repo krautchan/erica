@@ -98,7 +98,11 @@ class Radio(callbacks.Plugin):
 				# dj started streaming
 
 				elif ((result['djid'] != None) and (self.lastDJ == None)):
-					announce = u'%s strömt jetzt' % (result['dj'])
+					isPlanned = self._radioQuery('show');
+					if (isPlanned['showtype'] == 'PLANNED'):
+						announce = u'%s stömt jetzt "%s" für %s' % (isPlanned['showdj'], isPlanned['showname'], formatTimespan(isPlanned['showend'] - int(time.time())))
+					else:
+						announce = u'%s strömt jetzt' % (result['dj'])
 					
 					self._radioCheckReminds(irc)
 					
@@ -634,22 +638,6 @@ class Radio(callbacks.Plugin):
 			pass
 			
 	rremind = wrap(rremind, ['somethingWithoutSpaces', optional('somethingWithoutSpaces')])
-	
-	def remindget(self, irc, msg, args):
-		result = self._radioQuery('show');
-		showid = result['showid']
-		
-		result = self._radioQuery('dj')
-		djid = result['djid']
-		
-		temp = []
-		
-		result = self._radioQuery('remindget', {'showid':showid, 'djid':djid})
-		for key in result['remindGet']:
-			temp.append(u"%s aufwachen! Ein Remind für dich gefunden!" % result['remindGet'][key])
-			
-		reply = u" %s " % ' | '.join(temp)
-		irc.reply(reply.encode('utf-8'))
 						
 	def _radioQuery(self, function, parameters={}):
 
